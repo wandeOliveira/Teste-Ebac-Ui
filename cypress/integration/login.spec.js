@@ -1,17 +1,16 @@
 ///<reference types="cypress" />
-
+const perfil = require('../fixtures/Perfil.json')
 
 context('Funcionalidade login', () => {
 
     beforeEach(() => {
-        cy.visit('http://lojaebac.ebaconline.art.br/minha-conta/')
+        cy.visit('minha-conta')
         
     });
 
     afterEach(() => {
         cy.screenshot()
     });
-    
 
     it('Deve fazer login com sucesso' , () =>{
         
@@ -21,9 +20,28 @@ context('Funcionalidade login', () => {
         cy.get('.woocommerce-MyAccount-content > :nth-child(2)').should('contain' , 'Olá, aluno_ebac (não é aluno_ebac? Sair)')
         cy.get('.page-title').should('contain', 'Minha conta')
 
-
-
     })
+
+    it('Deve fazer login com sucesso usando arquivo de dados', () => {
+        cy.get('#username').type(perfil.usuario)
+        cy.get('#password').type(perfil.senha)
+        cy.get('.woocommerce-form > .button').click()
+        cy.get('.page-title').should('contain', 'Minha conta')
+    });
+
+    it.only('deve fazer login com sucesso usando fixture', () => {
+        cy.fixture('perfil').then(dados =>{ 
+            cy.get('#username').type(dados.usuario)
+        cy.get('#password').type(dados.senha, {log: false})
+        cy.get('.woocommerce-form > .button').click()
+        cy.get('.page-title').should('contain', 'Minha conta')
+        })
+
+
+
+
+        
+    });
 
     it('deve exibir uma mensagem de erro ao inserir usuario invalido', () => {
 
@@ -34,9 +52,6 @@ context('Funcionalidade login', () => {
         cy.get('.woocommerce-error > li').should('contain' , 'Erro: O usuário aluno_ebac@teste não está registrado neste site')
 
     });
-    
-
-
 
     it('deve exibir uma mensagem de erro ao inserir senha invalida', () => {
 
